@@ -1,0 +1,176 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: grades
+    description: Grades operations
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /grades/login:
+    post:
+      operationId: gradesLogin
+      tags: [grades]
+      summary: Login to NovaCampus portal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Login result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResponse"
+
+  /grades/report:
+    get:
+      operationId: getGradesReport
+      tags: [grades]
+      summary: Get student grades report
+      responses:
+        "200":
+          description: Grades report
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GradesResponse"
+        "401":
+          description: Session expired or invalid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /grades/logout:
+    post:
+      operationId: gradesLogout
+      tags: [grades]
+      summary: Logout and clear session
+      responses:
+        "200":
+          description: Logout result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
+    LoginRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+      required:
+        - username
+        - password
+
+    LoginResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        displayName:
+          type: string
+        sessionToken:
+          type: string
+        error:
+          type: string
+      required:
+        - success
+
+    GradeItem:
+      type: object
+      properties:
+        courseCode:
+          type: string
+        courseName:
+          type: string
+        credits:
+          type: string
+        grade:
+          type: string
+        midtermGrade:
+          type: string
+        points:
+          type: string
+        section:
+          type: string
+        subType:
+          type: string
+      required:
+        - courseCode
+        - courseName
+        - credits
+        - grade
+        - midtermGrade
+        - points
+        - section
+        - subType
+
+    GradesResponse:
+      type: object
+      properties:
+        grades:
+          type: array
+          items:
+            $ref: "#/components/schemas/GradeItem"
+        fetchedAt:
+          type: string
+        displayName:
+          type: string
+      required:
+        - grades
+        - fetchedAt
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        needsReAuth:
+          type: boolean
+      required:
+        - error
+
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+      required:
+        - success

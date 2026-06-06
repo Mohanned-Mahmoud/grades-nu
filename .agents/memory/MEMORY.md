@@ -1,0 +1,1 @@
+- [NovaCampus grades API structure](novacampus-grades-api.md) — courses are nested at data.transcriptSequences[n].sessions[m].courses in POST /Students/Grades response
